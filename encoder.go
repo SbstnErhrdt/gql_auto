@@ -113,6 +113,12 @@ func (enc *encoder) StructOf(t reflect.Type, options ...Option) (*graphql.Object
 
 	for i := 0; i < t.NumField(); i++ {
 		field := t.Field(i)
+
+		// if the field is not exported, ignore it
+		if field.PkgPath != "" {
+			continue
+		}
+
 		tag, ok := field.Tag.Lookup("graphql")
 		// if there is no graphql tag look for a json tag
 		if !ok {
@@ -144,7 +150,7 @@ func (enc *encoder) StructOf(t reflect.Type, options ...Option) (*graphql.Object
 
 		resolve := fieldResolve(field)
 
-		gfield := &graphql.Field{
+		gqlField := &graphql.Field{
 			Type:    objectType,
 			Resolve: resolve,
 		}
@@ -160,7 +166,7 @@ func (enc *encoder) StructOf(t reflect.Type, options ...Option) (*graphql.Object
 			}
 			fieldName = toLowerCamelCase(string(fieldNameRunes))
 		}
-		r.AddFieldConfig(fieldName, gfield)
+		r.AddFieldConfig(fieldName, gqlField)
 	}
 	return r, nil
 }
