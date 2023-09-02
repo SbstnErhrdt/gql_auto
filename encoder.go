@@ -9,24 +9,24 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
-type encoder struct {
+type Encoder struct {
 	types map[string]graphql.Type
 }
 
-func NewEncoder() *encoder {
-	return &encoder{
+func NewEncoder() *Encoder {
+	return &Encoder{
 		types: make(map[string]graphql.Type),
 	}
 }
 
 var DefaultEncoder = NewEncoder()
 
-func (enc *encoder) Struct(obj interface{}, options ...Option) (*graphql.Object, error) {
+func (enc *Encoder) Struct(obj interface{}, options ...Option) (*graphql.Object, error) {
 	t := reflect.TypeOf(obj)
 	return enc.StructOf(t, options...)
 }
 
-func (enc *encoder) Args(obj interface{}) (graphql.FieldConfigArgument, error) {
+func (enc *Encoder) Args(obj interface{}) (graphql.FieldConfigArgument, error) {
 	t := reflect.TypeOf(obj)
 	return enc.ArgsOf(t)
 }
@@ -77,7 +77,7 @@ func toLowerCamelCase(input string) string {
 // ```
 //
 // * fieldname: The name of the field.
-func (enc *encoder) StructOf(t reflect.Type, options ...Option) (*graphql.Object, error) {
+func (enc *Encoder) StructOf(t reflect.Type, options ...Option) (*graphql.Object, error) {
 	if r, ok := enc.getType(t); ok {
 		if d, ok := r.(*graphql.Object); ok {
 			return d, nil
@@ -171,7 +171,7 @@ func (enc *encoder) StructOf(t reflect.Type, options ...Option) (*graphql.Object
 	return r, nil
 }
 
-func (enc *encoder) FieldOf(t reflect.Type, options ...Option) (graphql.Field, error) {
+func (enc *Encoder) FieldOf(t reflect.Type, options ...Option) (graphql.Field, error) {
 	r := graphql.Field{}
 
 	fieldType, err := enc.StructOf(t)
@@ -190,11 +190,11 @@ func (enc *encoder) FieldOf(t reflect.Type, options ...Option) (graphql.Field, e
 	return r, nil
 }
 
-func (enc *encoder) Field(t interface{}, options ...Option) (graphql.Field, error) {
+func (enc *Encoder) Field(t interface{}, options ...Option) (graphql.Field, error) {
 	return enc.FieldOf(reflect.TypeOf(t), options...)
 }
 
-func (enc *encoder) ArrayOf(t reflect.Type, options ...Option) (graphql.Type, error) {
+func (enc *Encoder) ArrayOf(t reflect.Type, options ...Option) (graphql.Type, error) {
 	if t.Kind() == reflect.Ptr {
 		// If pointer, get the Type of the pointer
 		t = t.Elem()
@@ -220,7 +220,7 @@ func (enc *encoder) ArrayOf(t reflect.Type, options ...Option) (graphql.Type, er
 	return graphql.NewList(typeBuilt), nil
 }
 
-func (enc *encoder) InputObjectFieldMap(t reflect.Type) (graphql.InputObjectConfigFieldMap, error) {
+func (enc *Encoder) InputObjectFieldMap(t reflect.Type) (graphql.InputObjectConfigFieldMap, error) {
 	r := graphql.InputObjectConfigFieldMap{}
 
 	if t.Kind() == reflect.Ptr {
@@ -272,7 +272,7 @@ func (enc *encoder) InputObjectFieldMap(t reflect.Type) (graphql.InputObjectConf
 	return r, nil
 }
 
-func (enc *encoder) ArgsOf(t reflect.Type) (graphql.FieldConfigArgument, error) {
+func (enc *Encoder) ArgsOf(t reflect.Type) (graphql.FieldConfigArgument, error) {
 	r := graphql.FieldConfigArgument{}
 
 	if t.Kind() == reflect.Ptr {
@@ -324,7 +324,7 @@ func (enc *encoder) ArgsOf(t reflect.Type) (graphql.FieldConfigArgument, error) 
 	return r, nil
 }
 
-func (enc *encoder) getType(t reflect.Type) (graphql.Type, bool) {
+func (enc *Encoder) getType(t reflect.Type) (graphql.Type, bool) {
 	name := t.Name()
 	if t.Kind() == reflect.Ptr {
 		name = t.Elem().Name()
@@ -336,7 +336,7 @@ func (enc *encoder) getType(t reflect.Type) (graphql.Type, bool) {
 	return nil, false
 }
 
-func (enc *encoder) registerType(t reflect.Type, r graphql.Type) {
+func (enc *Encoder) registerType(t reflect.Type, r graphql.Type) {
 	name := t.Name()
 	if t.Kind() == reflect.Ptr {
 		name = t.Elem().Name()

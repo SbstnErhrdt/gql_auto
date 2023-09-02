@@ -164,7 +164,7 @@ func (option *withResolver) Apply(dst interface{}) error {
 }
 
 type withArgs struct {
-	encoder *encoder
+	encoder *Encoder
 	args    interface{}
 }
 
@@ -176,7 +176,7 @@ func WithArgs(args ...interface{}) Option {
 	enc := DefaultEncoder
 	var data interface{}
 	if len(args) == 2 {
-		tmp, ok := args[0].(*encoder)
+		tmp, ok := args[0].(*Encoder)
 		if !ok {
 			panic("the first parameter of WithArgs must be an encoder")
 		}

@@ -22,7 +22,7 @@ var (
 	uuidType            = reflect.TypeOf(uuid.UUID{})
 )
 
-func (enc *encoder) buildFieldType(fieldType reflect.Type) (graphql.Type, error) {
+func (enc *Encoder) buildFieldType(fieldType reflect.Type) (graphql.Type, error) {
 	if r, ok := enc.getType(fieldType); ok {
 		return r, nil
 	}
