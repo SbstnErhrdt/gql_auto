@@ -166,7 +166,8 @@ func (enc *Encoder) StructOf(t reflect.Type, options ...Option) (*graphql.Object
 			}
 			fieldName = toLowerCamelCase(string(fieldNameRunes))
 		}
-		r.AddFieldConfig(fieldName, gqlField)
+		gqlField.Name = fieldName
+		AddField(r, gqlField)
 	}
 	return r, nil
 }
